@@ -1,0 +1,16 @@
+----------------------------
+ ------   ------   ------
+ |    |   |    |   |    |
+   ||     |    |     ||
+ |    |   |    |     ||
+ ------   ------     --
+----------------------------
+
+Wifi Api
+https://arduino-esp8266.readthedocs.io/en/latest/esp8266wifi/readme.html
+
+Pasos iniciales
+https://programarfacil.com/esp8266/como-programar-nodemcu-ide-arduino/
+
+Drivers
+https://cityos-air.readme.io/docs/1-usb-drivers-for-nodemcu-v10
