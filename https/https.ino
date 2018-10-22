@@ -127,36 +127,37 @@ void loop() {
 
 double analog_benceno(float Rs)
 {
-  double benceno = 2.734*pow(Rs/5463, -.2832); //Calculamos la concentración del metano
+  double benceno = 37.89*pow(Rs/5463, -3.165); //Calculamos la concentración del metano
   return benceno;
 }
 
 double analog_tolueno(float Rs)
 {
-  double tolueno = 2.957*pow(Rs/5463, -.2838); //Calculamos la concentración del propano
+  double tolueno = 47.36*pow(Rs/5463, -3.292); //Calculamos la concentración del propano
   return tolueno;
 }
 
 double analog_fenol(float Rs)
 {
-  double fenol = 3.914*pow(Rs/5463, -.3169);
+  double fenol = 79.77*pow(Rs/5463, -3.005);
   return fenol;
 }
 
 double analog_amonio(float Rs)
 {
-  double amonio = 6.34*pow(Rs/5463, -.4001); //Calculamos la concentración del amoniaco
+  double amonio = 101*pow(Rs/5463, -2.495); //Calculamos la concentración del amoniaco
   return amonio; 
 }
 
 double analog_monoxDeCarbono(float Rs)
 {
-  double monoxDeCarbono = 5.072*pow(Rs/5463, -.2576);
+  double monoxDeCarbono = 763.7*pow(Rs/5463, -4.541);
   return monoxDeCarbono;
 }
 
 double analog_dioxidoDeCarbono(float Rs)
 {
-  double dioxidoDeCarbono = 5.047*pow(Rs/5463, -.3433); 
+  double dioxidoDeCarbono = 110.8*pow(Rs/5463, -2.729); 
   return dioxidoDeCarbono;
 }
+
