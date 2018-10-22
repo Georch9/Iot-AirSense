@@ -1,5 +1,8 @@
 #include <ESP8266WiFi.h> 
 #define MEDICIONES 6
+#define TIEMPO_ENTRE_MUESTRAS 50000 //50 segundos
+#define TIEMPO_ENTRE_ENVIOS  10000 //10 segundos
+//#define DEBUG
 /******************************************          Wifi                        *************************************/
 const char* ssid = "iot"; // Rellena con el nombre de tu red WiFi
 const char* password = "12345678"; // Rellena con la contraseña de tu red WiFi
@@ -18,15 +21,13 @@ float Rs ;
 String url;
 int n;
 /******************************************          Funciones                   *************************************/
-double getCO2();
-double analog_alcohol(float Rs);
-double analog_amoniaco(float Rs);
-double analog_metano(float Rs);
-double analog_propano(float Rs);
+double analog_benceno(float Rs);
+double analog_tolueno(float Rs);
+double analog_fenol(float Rs);
+double analog_amonio(float Rs);
 double analog_monoxDeCarbono(float Rs);
-double analog_hidrogeno(float Rs);
 double analog_dioxidoDeCarbono(float Rs);
-double (*analog_lectur[6])(float) = {analog_amoniaco, analog_metano, analog_propano, analog_monoxDeCarbono, analog_hidrogeno, analog_dioxidoDeCarbono};
+double (*analog_lectur[6])(float) = {analog_benceno, analog_tolueno, analog_fenol, analog_amonio, analog_monoxDeCarbono, analog_dioxidoDeCarbono};
 
 /******************************************          Configuracion inicial      *************************************/
 void setup() 
@@ -35,7 +36,9 @@ void setup()
   delay(10);
 
   // Conectamos a la red WiFi
-
+  #ifdef DEBUG 
+    randomSeed(analogRead(A0));
+  #endif
   Serial.println();
   Serial.println();
   Serial.print("Connecting to ");
@@ -74,9 +77,14 @@ void loop()
   while(1)
   {
 
+
+  #ifdef DEBUG  
+    adc_MQ = random(1023);
+  #else 
     adc_MQ  = analogRead(A0); //Leemos la salida analógica del MQ
+  #endif
     voltaje = adc_MQ * (5.0 / 1023.0); //Convertimos la lectura en un valor de voltaje
-    Rs = 1000 * ((5 - voltaje)/voltaje); //Calculamos Rs con un RL de 1k
+    Rs = 22000 * ((5 - voltaje)/voltaje); //Calculamos Rs con un RL de 1k
 
 
     
@@ -124,72 +132,46 @@ void loop()
    
       Serial.println();
       Serial.println("Cerrando la conexión");
-      delay(10000);
+      delay(TIEMPO_ENTRE_ENVIOS);
     }
-    delay(50000);
+    delay(TIEMPO_ENTRE_MUESTRAS);
   }
 }
 
-
-double getCO2()
+double analog_benceno(float Rs)
 {
-  int adc_MQ = analogRead(A0); //Lemos la salida analógica  del MQ
-  float voltaje = adc_MQ * (5.0 / 1023.0); //Convertimos la lectura en un valor de voltaje
-  float Rs=1000*((5-voltaje)/voltaje);  //Calculamos Rs con un RL de 1k
-  double alcohol=0.4091*pow(Rs/5463, -1.497); // calculamos la concentración  de alcohol con la ecuación obtenida.
-  //-------Enviamos los valores por el puerto serial------------
-  Serial.print("adc:");
-  Serial.print(adc_MQ);
-  Serial.print("    voltaje:");
-  Serial.print(voltaje);
-  Serial.print("    Rs:");
-  Serial.print(Rs);
-  Serial.print("    alcohol:");
-  Serial.print(alcohol);
-  Serial.println("mg/L");  
+  double benceno = 37.89*pow(Rs/5463, -3.165); //Calculamos la concentración del metano
+  return benceno;
 }
 
-double analog_alcohol(float Rs)
+double analog_tolueno(float Rs)
 {
-  double alcohol = 1.108*pow(Rs/5463, -1.41); //Calculamos la concentración del alcohol
-  return alcohol; 
+  double tolueno = 47.36*pow(Rs/5463, -3.292); //Calculamos la concentración del propano
+  return tolueno;
 }
 
-double analog_amoniaco(float Rs)
+double analog_fenol(float Rs)
 {
-  double amoniaco = 161.7*pow(Rs/5463, -2.26); //Calculamos la concentración del amoniaco
-  return amoniaco; 
+  double fenol = 79.77*pow(Rs/5463, -3.005);
+  return fenol;
 }
 
-double analog_metano(float Rs)
+double analog_amonio(float Rs)
 {
-  double metano = 6922*pow(Rs/5463, -1.91); //Calculamos la concentración del metano
-  return metano;
-}
-
-double analog_propano(float Rs)
-{
-  double propano = 2738*pow(Rs/5463, -1.81); //Calculamos la concentración del propano
-  return propano;
+  double amonio = 101*pow(Rs/5463, -2.495); //Calculamos la concentración del amoniaco
+  return amonio; 
 }
 
 double analog_monoxDeCarbono(float Rs)
 {
-  double monoxDeCarbono = 233.9*pow(Rs/5463, -1.40);
+  double monoxDeCarbono = 763.7*pow(Rs/5463, -4.541);
   return monoxDeCarbono;
-}
-
-double analog_hidrogeno(float Rs)
-{
-  double hidrogeno = 1803*pow(Rs/5463, -0.66);
-  return hidrogeno;
 }
 
 double analog_dioxidoDeCarbono(float Rs)
 {
-  double dioxidoDeCarbono = 245*pow(Rs/5463, 2.26); 
+  double dioxidoDeCarbono = 110.8*pow(Rs/5463, -2.729); 
   return dioxidoDeCarbono;
 }
-
 
 
