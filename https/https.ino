@@ -7,7 +7,9 @@
 #define MEDICIONES 6
 #define TIEMPO_ENTRE_MUESTRAS 50000 //50 segundos
 #define TIEMPO_ENTRE_ENVIOS  10000 //10 segundos
-#define DEBUG
+#define RO 41763
+#define RL 1350
+//#define DEBUG
 /******************************************          Wifi                        *************************************/
 const char* ssid = "iot";
 const char* password = "12345678";
@@ -68,8 +70,9 @@ void loop() {
   #else 
     adc_MQ  = analogRead(A0); //Leemos la salida analógica del MQ
   #endif
-  voltaje = adc_MQ * (5.0 / 1023.0); //Convertimos la lectura en un valor de voltaje
-  Rs = 1000 * ((5 - voltaje)/voltaje); //Calculamos Rs con un RL de 1k
+ //Rs = ((1024.0 * RL) / adc_MQ) - RL;
+    voltaje = (adc_MQ * (3.3 / 1023.0))*2; //Convertimos la lectura en un valor de voltaje
+    Rs = RL * ((5 - voltaje)/voltaje); //Calculamos Rs con un RL de 1k
   
   for(n = 1; n <= MEDICIONES; n++)
   {
@@ -127,37 +130,37 @@ void loop() {
 
 double analog_benceno(float Rs)
 {
-  double benceno = 37.89*pow(Rs/5463, -3.165); //Calculamos la concentración del metano
+  double benceno = 37.89*pow(Rs/RO, -3.165); //Calculamos la concentración del metano
   return benceno;
 }
 
 double analog_tolueno(float Rs)
 {
-  double tolueno = 47.36*pow(Rs/5463, -3.292); //Calculamos la concentración del propano
+  double tolueno = 47.36*pow(Rs/RO, -3.292); //Calculamos la concentración del propano
   return tolueno;
 }
 
 double analog_fenol(float Rs)
 {
-  double fenol = 79.77*pow(Rs/5463, -3.005);
+  double fenol = 79.77*pow(Rs/RO, -3.005);
   return fenol;
 }
 
 double analog_amonio(float Rs)
 {
-  double amonio = 101*pow(Rs/5463, -2.495); //Calculamos la concentración del amoniaco
+  double amonio = 101*pow(Rs/RO, -2.495); //Calculamos la concentración del amoniaco
   return amonio; 
 }
 
 double analog_monoxDeCarbono(float Rs)
 {
-  double monoxDeCarbono = 763.7*pow(Rs/5463, -4.541);
+  double monoxDeCarbono = 763.7*pow(Rs/RO, -4.541);
   return monoxDeCarbono;
 }
 
 double analog_dioxidoDeCarbono(float Rs)
 {
-  double dioxidoDeCarbono = 110.8*pow(Rs/5463, -2.729); 
+  double dioxidoDeCarbono = 110.8*pow(Rs/RO, -2.729); 
   return dioxidoDeCarbono;
 }
 
