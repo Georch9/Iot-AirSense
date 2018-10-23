@@ -3,6 +3,7 @@
 #define TIEMPO_ENTRE_MUESTRAS 50000 //50 segundos
 #define TIEMPO_ENTRE_ENVIOS  10000 //10 segundos
 #define RO 41763
+#define RL 1350
 //#define DEBUG
 /******************************************          Wifi                        *************************************/
 const char* ssid = "iot"; // Rellena con el nombre de tu red WiFi
@@ -84,8 +85,11 @@ void loop()
   #else 
     adc_MQ  = analogRead(A0); //Leemos la salida analógica del MQ
   #endif
-    voltaje = adc_MQ * (5.0 / 1023.0); //Convertimos la lectura en un valor de voltaje
-    Rs = 20000 * ((5 - voltaje)/voltaje); //Calculamos Rs con un RL de 1k
+    //Rs = ((1024.0 * RL) / adc_MQ) - RL;
+    voltaje = (adc_MQ * (3.3 / 1023.0))*2; //Convertimos la lectura en un valor de voltaje
+    Rs = RL * ((5 - voltaje)/voltaje); //Calculamos Rs con un RL de 1k
+    Serial.println("Rs");
+    Serial.println(Rs);
 
 
     
