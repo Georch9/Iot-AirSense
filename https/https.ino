@@ -70,10 +70,10 @@ void loop() {
   #else 
     adc_MQ  = analogRead(A0); //Leemos la salida analógica del MQ
   #endif
- //Rs = ((1024.0 * RL) / adc_MQ) - RL;
+   //Rs = ((1024.0 * RL) / adc_MQ) - RL;
     voltaje = (adc_MQ * (3.3 / 1023.0))*2; //Convertimos la lectura en un valor de voltaje
-    Rs = RL * ((5 - voltaje)/voltaje); //Calculamos Rs con un RL de 1k
-  
+    //Rs = RL * ((5 - voltaje)/voltaje); //Calculamos Rs con un RL de 1k
+    Rs = (1000.0*adc_MQ)/(1023.0 - adc_MQ);
   for(n = 1; n <= MEDICIONES; n++)
   {
     // Use WiFiClientSecure class to create TLS connection
@@ -130,37 +130,37 @@ void loop() {
 
 double analog_benceno(float Rs)
 {
-  double benceno = 37.89*pow(Rs/RO, -3.165); //Calculamos la concentración del metano
+  double benceno = 37.89*pow(Rs/3.6316, -3.165); //Calculamos la concentración del metano
   return benceno;
 }
 
 double analog_tolueno(float Rs)
 {
-  double tolueno = 47.36*pow(Rs/RO, -3.292); //Calculamos la concentración del propano
+  double tolueno = 47.36*pow(Rs/3.7294, -3.292); //Calculamos la concentración del propano
   return tolueno;
 }
 
 double analog_fenol(float Rs)
 {
-  double fenol = 79.77*pow(Rs/RO, -3.005);
+  double fenol = 79.77*pow(Rs/7.6832, -3.005);
   return fenol;
 }
 
 double analog_amonio(float Rs)
 {
-  double amonio = 101*pow(Rs/RO, -2.495); //Calculamos la concentración del amoniaco
+  double amonio = 101*pow(Rs/.6270, -2.495); //Calculamos la concentración del amoniaco
   return amonio; 
 }
 
 double analog_monoxDeCarbono(float Rs)
 {
-  double monoxDeCarbono = 763.7*pow(Rs/RO, -4.541);
+  double monoxDeCarbono = 763.7*pow(Rs/4.6532, -4.541);
   return monoxDeCarbono;
 }
 
 double analog_dioxidoDeCarbono(float Rs)
 {
-  double dioxidoDeCarbono = 110.8*pow(Rs/RO, -2.729); 
+  double dioxidoDeCarbono = 110.8*pow(Rs/53.3495, -2.729); 
   return dioxidoDeCarbono;
 }
 
