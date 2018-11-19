@@ -4,6 +4,7 @@
 #define TIEMPO_ENTRE_ENVIOS  10000 //10 segundos
 #define RO 41763
 #define RL 1350
+#define SMOKE_D 1
 //#define DEBUG
 /******************************************          Wifi                        *************************************/
 const char* ssid = "iot"; // Rellena con el nombre de tu red WiFi
@@ -29,7 +30,12 @@ double analog_fenol(float Rs);
 double analog_amonio(float Rs);
 double analog_monoxDeCarbono(float Rs);
 double analog_dioxidoDeCarbono(float Rs);
-double (*analog_lectur[6])(float) = {analog_benceno, analog_tolueno, analog_fenol, analog_amonio, analog_monoxDeCarbono, analog_dioxidoDeCarbono};
+double humoDetectado(float Rs);
+double (*analog_lectur[7])(float) = {analog_benceno, analog_tolueno, analog_fenol, analog_amonio, analog_monoxDeCarbono, analog_dioxidoDeCarbono, humoDetectado};
+/////////////////////////////////////////////////////////
+int smoke_detected;
+int extra_data;
+/////////////////////////////////////////////////////////    
 
 /******************************************          Configuracion inicial      *************************************/
 void setup() 
@@ -63,11 +69,33 @@ void setup()
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP()); // Mostramos la IP
 
+  //////////////////////////////////////////////////////////////
+  pinMode(D0, INPUT_PULLUP);
+  pinMode(D2, OUTPUT);
+  //////////////////////////////////////////////////////////////
+
 }
 /******************************************          Main                    *************************************/
 void loop() 
 {
 
+////////////////////////////////////////////////////////////////////
+  while(1)
+  {
+     smoke_detected = digitalRead(D0);
+     Serial.println(smoke_detected);
+    if(!smoke_detected)
+    {
+      digitalWrite(D2, HIGH);  
+      extra_data = 1;
+    }else
+    {
+      digitalWrite(D2, LOW);
+      extra_data = 0;
+    }
+     delay(500);
+  }
+////////////////////////////////////////////////////////////////////
   Serial.print("connecting to ");
   Serial.println(host);
  
@@ -84,6 +112,18 @@ void loop()
     adc_MQ = random(1023);
   #else 
     adc_MQ  = analogRead(A0); //Leemos la salida analógica del MQ
+    ////////////////////////////////////////////////////////////////////////
+    smoke_detected = digitalRead(D0);
+    if(!smoke_detected)
+    {
+      digitalWrite(D2, HIGH);  
+      extra_data = 1;
+    }else
+    {
+      digitalWrite(D2, LOW);
+      extra_data = 0;
+    }
+    ////////////////////////////////////////////////////////////////////////
   #endif
     //Rs = ((1024.0 * RL) / adc_MQ) - RL;
     voltaje = (adc_MQ * (3.3 / 1023.0))*2; //Convertimos la lectura en un valor de voltaje
@@ -93,7 +133,7 @@ void loop()
 
 
     
-    for(n = 1; n <= MEDICIONES; n++)
+    for(n = 1; n <= MEDICIONES + extra_data; n++)
     {
       if (!client.connect(host, httpPort)) 
       {
@@ -177,6 +217,11 @@ double analog_dioxidoDeCarbono(float Rs)
 {
   double dioxidoDeCarbono = 110.8*pow(Rs/RO, -2.729); 
   return dioxidoDeCarbono;
+}
+
+double humoDetectado(float Rs)
+{ 
+  return SMOKE_D;
 }
 
 
